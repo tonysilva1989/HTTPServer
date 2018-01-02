@@ -1,4 +1,9 @@
-
+/*
+ * Servidor2.cpp
+ *
+ *  Created on: 25 de dez de 2017
+ *      Author: tony
+ */
 
 /*
  * GET structure:
@@ -15,53 +20,65 @@
 #include <pthread.h>
 #include <chrono>
 
+
 using boost::asio::ip::tcp; //utiliza o space tcp
 
-int Server()
+void server(){
+	try
+	    {
+	        boost::asio::io_service io_service; //representa o link do programa para o serviço I/O do sistema
+
+	        tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), 2222)); //escuta uma nova conexão com o endpoint especificado
+	        tcp::socket socket(io_service); //cria um novo socket
+
+
+	        while(true)
+	        {
+	            acceptor.accept(socket); //aceita uma nova conexão
+
+	            //reading response
+	            boost::asio::streambuf response;
+	            read_until(socket, response, "\r\n"); //lendo async response
+	            boost::asio::streambuf::const_buffers_type bufs = response.data();
+	            int rSize = response.size();
+	            std::string resposta(boost::asio::buffers_begin(bufs), boost::asio::buffers_begin(bufs) + rSize);
+
+	            std::cout << resposta << std::endl;
+
+
+	            //respondendo a uma requisição get
+	            const char message[] = "HTTP/1.0 200 OK\r\n\r\n<html><body><i>Hello World HTML Page!</i></body></html>";
+
+	            boost::system::error_code ignored_error;
+	            boost::asio::write(socket, boost::asio::buffer(message), ignored_error); //envio da response
+	            //socket.send(boost::asio::buffer("HTTP/1.0 200 OK\r\n\r\n<html><body><i>Respondendo!</i></body></html>"));
+
+	            socket.close();
+
+
+	        }
+	    }
+	    catch (std::exception& e)
+	    {
+	        std::cerr << e.what() << std::endl;
+	    }
+}
+
+
+int main()
 {
-    try
-    {
-        boost::asio::io_service io_service; //representa o link do programa para o serviço I/O do sistema
-        int cont=0;
-        tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), 2222)); //escuta uma nova conexão com o endpoint especificado
-        tcp::socket socket(io_service); //cria um novo socket
-
-        while(true)
-        {
-            acceptor.accept(socket); //aceita uma nova conexão
-
-            const char message[] = "HTTP/1.0 200 OK\r\n\r\n<html><body><i>Ola, mundo!</i></body></html>";
-
-            boost::system::error_code ignored_error;
-            boost::asio::write(socket, boost::asio::buffer(message), ignored_error); //envio da response
-            //socket.send(boost::asio::buffer("HTTP/1.0 200 OK\r\n\r\n<html><body><i>Respondendo!</i></body></html>"));
-
-            socket.close();
-            		{
-            	cont++;
-            	std::cout << cont << std::endl;
-            }
-
-
-        }
-    }
-    catch (std::exception& e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
+    server();
 
     return 0;
 }
 
 
-/*
- * Servidor2.cpp
- *
- *  Created on: 25 de dez de 2017
- *      Author: tony
- */
+
 
 /*
+ *
+ * versão sem loop (aceita apenas uma conexão, depois encerra
+ *
 //#include "stdafx.h"
 #include <boost/asio.hpp>
 #include <iostream>
@@ -103,6 +120,7 @@ int main(){
 	//while(true)
 	acceptor.async_accept(tcpSocket,onAccept);
 
+	//A call to io_service::run() blocks while there are unfinished asynchronous operations, so you would typically call it as soon as you have started your first asynchronous operation.
 	ioService.run();
 
 }
