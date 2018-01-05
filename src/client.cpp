@@ -24,19 +24,17 @@ struct Client
         boost::asio::connect(this->socket, endpoint);
     };
 
-    void send() {
+    void send(std::string message) {
 
-		std::stringstream request_stream;
+		    std::stringstream request_stream;
 
-		request_stream << "POST HTTP/1.1 \r\n";
-		request_stream << "Host:" << "127.0.0.1:2222" << "\r\n";
-		request_stream << "User-Agent: C/1.0";
-		request_stream << "Content-Type: application/json; charset=utf-8 \r\n";
-		request_stream << "" << "\r\n";
-		request_stream << "Accept: */*\r\n";
-		request_stream << "Connection: close\r\n\r\n";
-
-		std::string const& message = "POST /title/ HTTP/1.1 \r\nHost: 127.0.0.1:2222\r\nUser-Agent: C/1.0Content-Type: application/json; charset=utf-8 \r\n\r\nAlguma coisa de novo";
+//		request_stream << "POST HTTP/1.1 \r\n";
+//		request_stream << "Host:" << "127.0.0.1:2222" << "\r\n";
+//		request_stream << "User-Agent: C/1.0";
+//		request_stream << "Content-Type: application/json; charset=utf-8 \r\n";
+//		request_stream << "" << "\r\n";
+//		request_stream << "Accept: */*\r\n";
+//		request_stream << "Connection: close\r\n\r\n";
 
         socket.send(boost::asio::buffer(message));
     }
@@ -47,12 +45,16 @@ struct Client
 int main(){
 
     boost::asio::io_service svc;
-    Client client(svc, "127.0.0.1","2222");
+    std::string header = "POST /title/ HTTP/1.1\r\n\r\n";
+
+    std::string message = "alguma sadsa";
+
+    message = header + message;
+
+    Client client(svc, "127.0.0.1","2222"); //instanciando cliente
 
 
-
-    client.send();
-    //client.send("bye world\n");
+    client.send(message);
 }
 
 

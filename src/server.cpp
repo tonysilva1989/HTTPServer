@@ -5,15 +5,6 @@
  *      Author: tony
  */
 
-/*
- * GET structure:
-	    GET  HTTP/1.1
-		Host: 127.0.0.1:2222
-		Cache-Control: no-cache
-		Postman-Token: 0f953db6-a126-3d44-c1a7-5b2a195e827c
- *
- */
-
 #include <iostream>
 #include <string>
 #include <boost/asio.hpp>
