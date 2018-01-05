@@ -12,7 +12,7 @@
 #include <chrono>
 
 
-using boost::asio::ip::tcp; //utiliza o space tcp
+using boost::asio::ip::tcp; //utiliza o space tcp (sem o namespace, apenas o tcp fica disponível)
 
 void server(){
 	try

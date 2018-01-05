@@ -5,19 +5,29 @@
  *      Author: tony
  */
 
+ // std::string request_stream;
+ // request_stream << "POST HTTP/1.1 \r\n";
+ // request_stream << "Host:" << "127.0.0.1:2222" << "\r\n";
+ // request_stream << "User-Agent: C/1.0";
+ // request_stream << "Content-Type: application/json; charset=utf-8 \r\n";
+ // request_stream << "" << "\r\n";
+ // request_stream << "Accept: */*\r\n";
+ // request_stream << "Connection: close\r\n\r\n";
+
 
 //g++ client.cpp -o client -lpthread -lboost_system
 
 #include <boost/asio.hpp>
 #include <iostream>
 
-struct Client
+class Client
 {
+public:
     boost::asio::io_service& io_service;
     boost::asio::ip::tcp::socket socket;
 
     Client(boost::asio::io_service& svc, std::string const& host, std::string const& port)
-        : io_service(svc), socket(io_service)
+        : io_service(svc), socket(io_service) //inicializando atributos no construtor
     {
         boost::asio::ip::tcp::resolver resolver(io_service);
         boost::asio::ip::tcp::resolver::iterator endpoint = resolver.resolve(boost::asio::ip::tcp::resolver::query(host, port));
@@ -25,16 +35,6 @@ struct Client
     };
 
     void send(std::string message) {
-
-		    std::stringstream request_stream;
-
-//		request_stream << "POST HTTP/1.1 \r\n";
-//		request_stream << "Host:" << "127.0.0.1:2222" << "\r\n";
-//		request_stream << "User-Agent: C/1.0";
-//		request_stream << "Content-Type: application/json; charset=utf-8 \r\n";
-//		request_stream << "" << "\r\n";
-//		request_stream << "Accept: */*\r\n";
-//		request_stream << "Connection: close\r\n\r\n";
 
         socket.send(boost::asio::buffer(message));
     }
@@ -47,12 +47,11 @@ int main(){
     boost::asio::io_service svc;
     std::string header = "POST /title/ HTTP/1.1\r\n\r\n";
 
-    std::string message = "alguma sadsa";
+    std::string message = "<MESSAGE_CONTENT>";
 
     message = header + message;
 
     Client client(svc, "127.0.0.1","2222"); //instanciando cliente
-
 
     client.send(message);
 }
